@@ -1,3 +1,23 @@
+
+<?php
+
+
+    require '../database.php';
+
+    
+
+
+?>
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +26,20 @@
     <title>Login - Chef's Culinary Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
+
+
+
+<div id="success" class="w-full z-10 h-[65px] fixed top-0 left-0 hidden rounded-[5px] border-2 border-[green] text-[#49de49] font-semibold items-center pl-10 bg-[#052c05]" role="alert">
+  Login succesfuly!
+</div>
+<div id="error" class="w-full z-10 h-[65px] hidden fixed top-0 left-0 rounded-[5px] border-2 border-[red] text-[#972a2a] font-semibold items-center pl-10 bg-[#2c0505]" role="alert">
+  Error try again!
+</div>
+
+
+
+
 <body class="bg-gray-50 text-gray-800">
     <!-- Login Page Container -->
     <div class="flex items-center justify-center min-h-screen bg-gray-100">
@@ -21,35 +55,21 @@
                 <!-- Email Field -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Enter your email"
-                        class="mt-1 w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    <input type="email" id="email" name="email" placeholder="Enter your email" class="mt-1 w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                     />
                 </div>
 
                 <!-- Password Field -->
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Enter your password"
-                        class="mt-1 w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    <input type="password" id="password" name="password" placeholder="Enter your password" class="mt-1 w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                     />
                 </div>
 
                 <!-- Remember Me and Forgot Password -->
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                        <input
-                            type="checkbox"
-                            id="remember"
-                            name="remember"
-                            class="h-4 w-4 text-yellow-500 focus:ring-yellow-500 border-gray-300 rounded"
+                        <input type="checkbox" id="remember" name="remember" class="h-4 w-4 text-yellow-500 focus:ring-yellow-500 border-gray-300 rounded"
                         />
                         <label for="remember" class="ml-2 text-sm text-gray-600">Remember Me</label>
                     </div>
@@ -57,12 +77,7 @@
                 </div>
 
                 <!-- Submit Button -->
-                <button
-                    type="submit"
-                    class="w-full py-3 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                >
-                    Log In
-                </button>
+                <button name="submit" type="submit" class="w-full py-3 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500">Log In</button>
 
                 <!-- Divider -->
                 <div class="text-center text-gray-500 text-sm mt-6">or</div>
@@ -77,6 +92,77 @@
             </form>
         </div>
     </div>
+
+
+
+    <?php
+
+
+
+
+    if(isset($_POST['submit'])){
+        $getEmail = htmlspecialchars($_POST['email']);
+        $getPassword = htmlspecialchars($_POST['password']);
+
+        if($cnx){
+            $sql = $cnx->prepare("SELECT * FROM users INNER JOIN role ON users.type = role.ID_role WHERE email = ? AND password = ?");
+            $sql->bind_param("ss",$getEmail,$getPassword);
+            if($sql->execute()){
+                $result = $sql->get_result();
+                if($result->num_rows === 1){
+                    $user = $result->fetch_assoc();
+
+                    session_start();
+                    if($user['titre'] == "admin"){
+                        $_SESSION['id'] = $user['ID_user'];
+                        echo '<script>document.getElementById("success").style.display = "flex";
+                        setTimeout(()=>{
+                        document.getElementById("success").style.display = "none";
+                        location.replace("../admin/dashboard.php");
+                            },1000)
+                        </script>';
+                    }else if($user['titre'] == "client"){
+                        $_SESSION['id'] = $user['ID_user'];
+                        echo '<script>document.getElementById("success").style.display = "flex";
+                        setTimeout(()=>{
+                        document.getElementById("success").style.display = "none";
+                        location.replace("../pages/menu.php");
+                            },1000)
+                        </script>';
+                    }else{
+                        session_destroy();
+                        echo '<script>document.getElementById("error").style.display = "flex";
+                        setTimeout(()=>{
+                            document.getElementById("error").style.display = "none";
+                        },1000)
+                        </script>';
+                    }
+                    
+                }else{
+                    session_destroy();
+                    echo '<script>document.getElementById("error").style.display = "flex";
+                setTimeout(()=>{
+                    document.getElementById("error").style.display = "none";
+                },1000)
+                </script>';
+                }
+            }else{
+                session_destroy();
+                echo '<script>document.getElementById("error").style.display = "flex";
+                setTimeout(()=>{
+                    document.getElementById("error").style.display = "none";
+                },1000)
+                </script>';
+            }
+        }
+    }
+
+
+
+
+
+
+    ?>
 
     <script src="../js/script.js"></script>
     <script>

@@ -1,3 +1,26 @@
+
+<?php
+
+
+    require '../database.php';
+    session_start();
+    if(!isset($_SESSION['id'])){
+        session_destroy();
+        echo '<script>location.replace("../login/login.php")</script>';
+    }
+
+    if(isset($_POST['logout'])){
+        session_destroy();
+        echo '<script>location.replace("../index.php")</script>';
+    }
+
+
+
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,11 +57,11 @@
         <header class="bg-yellow-500 text-white py-4 shadow-md">
             <div class="container mx-auto px-6 flex justify-between items-center max-sm:flex-col max-sm:gap-4">
                 <h1 class="text-2xl font-bold">Yemmy</h1>
-                <nav>
+                <form method="post">
                     <a href="menu.php" class="text-white hover:underline mx-2">Home</a>
                     <a href="reservation.php" class="text-white hover:underline mx-2">My Reservations</a>
-                    <a href="#" class="text-white hover:underline mx-2">Logout</a>
-                </nav>
+                    <button type="submit" name="logout" class="text-white hover:underline mx-2">Logout</button>
+                </form>
             </div>
         </header>
 
@@ -49,6 +72,16 @@
                 <h2 class="text-3xl font-bold text-gray-800 mb-6">Available Menus</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Menu Card 1 -->
+
+                <?php
+
+                            
+
+
+
+
+                ?>
+
                     <div class="bg-white shadow-md rounded-lg overflow-hidden">
                         <img src="https://via.placeholder.com/400" alt="Menu Image" class="w-full h-48 object-cover">
                         <div class="p-4">
@@ -83,6 +116,8 @@
                             <button onclick="openModal()" class="mt-4 w-full py-2 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500">Reserve Now</button>
                         </div>
                     </div>
+
+
 
                     <!-- Menu Card 2 -->
                     <div class="bg-white shadow-md rounded-lg overflow-hidden">

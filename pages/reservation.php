@@ -1,3 +1,27 @@
+
+<?php
+
+
+    require '../database.php';
+    session_start();
+    if(!isset($_SESSION['id'])){
+        session_destroy();
+        echo '<script>location.replace("../login/login.php")</script>';
+    }
+
+    if(isset($_POST['logout'])){
+        session_destroy();
+        echo '<script>location.replace("../index.php")</script>';
+    }
+
+
+
+?>
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,11 +37,11 @@
         <header class="bg-yellow-500 text-white py-4 shadow-md">
             <div class="container mx-auto px-6 flex justify-between items-center max-sm:flex-col max-sm:gap-4">
                 <h1 class="text-2xl font-bold">Yemmy</h1>
-                <nav>
+                <form method="post">
                     <a href="menu.php" class="text-white hover:underline mx-2">Home</a>
-                 <a href="reservation.php" class="text-white hover:underline mx-2">My Reservations</a>
-                    <a href="#" class="text-white hover:underline mx-2">Logout</a>
-                </nav>
+                    <a href="reservation.php" class="text-white hover:underline mx-2">My Reservations</a>
+                    <button type="submit" name="logout" class="text-white hover:underline mx-2">Logout</button>
+                </form>
             </div>
         </header>
 

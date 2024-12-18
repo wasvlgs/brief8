@@ -1,3 +1,49 @@
+
+<?php
+
+
+    require '../database.php';
+    session_start();
+    if(!isset($_SESSION['id'])){
+        session_destroy();
+        echo '<script>location.replace("../login/login.php")</script>';
+    }else{
+        if($cnx){
+            $getId = $_SESSION['id'];
+            $getUser = $cnx->prepare("SELECT * FROM users INNER JOIN role ON users.type = role.ID_role WHERE ID_user = ?");
+            $getUser->bind_param("i",$getId);
+            if($getUser->execute()){
+                $result = $getUser->get_result();
+                $user = $result->fetch_assoc();
+                if($user['titre'] != "admin"){
+                    session_destroy();
+                    echo '<script>location.replace("../login/login.php")</script>';
+                }
+            }else{
+                session_destroy();
+                echo '<script>location.replace("../login/login.php")</script>';
+            }
+        }
+    }
+
+    if(isset($_POST['logout'])){
+        session_destroy();
+        echo '<script>location.replace("../index.php")</script>';
+    }
+
+
+
+?>
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,13 +59,13 @@
         <header class="bg-yellow-500 text-white py-4 shadow-md">
             <div class="container mx-auto px-6 flex justify-between items-center max-sm:flex-col max-sm:gap-4">
                 <h1 class="text-2xl font-bold">Yemmy</h1>
-                <nav>
+                <form method="post">
                     <a href="dashboard.php" class="text-white hover:underline mx-2">Dashboard</a>
                     <a href="addmenu.php" class="text-white hover:underline mx-2">Add menu</a>
                     <a href="reservation.php" class="text-white hover:underline mx-2">reservation</a>
                     <a href="users.php" class="text-white hover:underline mx-2">Users</a>
-                    <a href="logout.php" class="text-white hover:underline mx-2">Logout</a>
-                </nav>
+                    <button type="submit" name="logout" class="text-white hover:underline mx-2">Logout</button>
+                </form>
             </div>
         </header>
 

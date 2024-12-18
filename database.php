@@ -10,7 +10,7 @@
 $host = "localhost";
 $username = "root";
 $password = "";
-$dbname = "";
+$dbname = "brief8";
 
 
 

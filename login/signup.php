@@ -4,26 +4,6 @@
 
     require '../database.php';
 
-    
-
-    if(isset($_POST['submit'])){
-        $FName = $_POST['firstname'];
-        $LName = $_POST['lastname'];
-        $adresse = $_POST['address'];
-        $phone = $_POST['phone'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $cPassword = $_POST['confirmpassword'];
-        if($cnx){
-            $sql = $cnx->prepare("INSERT INTO users(nom,prenom,email,password,Adresse,num,type) VALUES('Yazza','Wassim','wassim@gmail.com','123456','Safi, Miftah el khair','0647102474',2)");
-        }
-    }
-
-
-
-
-
-
 
 
 ?>
@@ -42,8 +22,11 @@
 </head>
 
 
-<div class="w-full h-[65px] fixed top-0 left-0 hidden rounded-[5px] border-2 border-[green] text-[#49de49] font-semibold flex items-center pl-10 bg-[#052c05]" role="alert">
-  A simple success alert—check it out!
+<div id="success" class="w-full z-10 h-[65px] fixed top-0 left-0 hidden rounded-[5px] border-2 border-[green] text-[#49de49] font-semibold items-center pl-10 bg-[#052c05]" role="alert">
+  Sign up succesfuly!
+</div>
+<div id="error" class="w-full z-10 h-[65px] hidden fixed top-0 left-0 rounded-[5px] border-2 border-[red] text-[#972a2a] font-semibold items-center pl-10 bg-[#2c0505]" role="alert">
+  Error try again!
 </div>
 
 <body class="bg-gray-50 text-gray-800">
@@ -98,6 +81,72 @@
             </form>
         </div>
     </div>
+
+            <?php
+
+
+                if(isset($_POST['submit'])){
+                    $FName = htmlspecialchars($_POST['firstname']);
+                    $LName = htmlspecialchars($_POST['lastname']);
+                    $adresse = htmlspecialchars($_POST['address']);
+                    $phone = htmlspecialchars($_POST['phone']);
+                    $email = htmlspecialchars($_POST['email']);
+                    $password = htmlspecialchars($_POST['password']);
+                    // $cPassword = $_POST['confirmpassword'];
+                    if($cnx){
+                        $checkEmail = $cnx->prepare("SELECT * FROM users");
+                        $answer = true;
+                        if($checkEmail->execute()){
+                            $result = $checkEmail->get_result();
+                            foreach($result as $user){
+                                if($user['email'] == $email){
+                                    $answer = false;
+                                }
+                            }
+                            if($answer === true){
+                                $sql = $cnx->prepare("INSERT INTO users(nom,prenom,email,password,Adresse,num,type) VALUES(?, ?, ?, ?, ?, ?, 2)");
+                                $sql->bind_param("sssssi", $FName, $LName, $email, $password, $adresse, $phone);
+                                if($sql->execute()){
+
+                                    $getUser = $cnx->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
+                                    $getUser->bind_param("ss",$email,$password);
+                                    if($getUser->execute()){
+                                        $result = $getUser->get_result();
+                                        $user = $result->fetch_assoc();
+                                        session_start();
+                                        $_SESSION['id'] = $user['ID_user'];
+                                    }else{
+                                        session_destroy();
+                                    }
+                                    echo '<script>document.getElementById("success").style.display = "flex";
+                                    setTimeout(()=>{
+                                        document.getElementById("success").style.display = "none";
+                                    },1000)
+                                    </script>';
+                                }else{
+                                    echo '<script>document.getElementById("error").style.display = "flex";
+                                    setTimeout(()=>{
+                                        document.getElementById("error").style.display = "none";
+                                    },1000)
+                                    </script>';
+                                    session_destroy();
+                                }
+                            }else{
+                                echo '<script>
+                                    document.getElementById("email").style.border = "2px solid red";
+                                </script>';
+                            }
+                        }
+                        
+
+                        
+                        
+                    }
+                }
+
+
+
+            ?>
 
     <script src="../js/script.js"></script>
     <script>
