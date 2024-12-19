@@ -42,3 +42,5 @@ INSERT INTO plats(ID_menu,Titre,Description,imgSrc) VALUES(1,"Pastishu","Pastish
 
 
 INSERT INTO reservation(ID_user,ID_menu,Date_reservation,Time_reservation,Adresse,places_disponibles) VALUES(2,1,"2024-12-25","10:45:00","Marrakech, bab dokala",15)
+
+SELECT * FROM menus INNER JOIN plats ON plats.ID_menu = menus.ID_menu;

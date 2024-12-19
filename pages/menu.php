@@ -75,122 +75,48 @@
 
                 <?php
 
-                            
+                    if($cnx){
+                        $getData = $cnx->prepare("SELECT * FROM menus");
+                        if($getData->execute()){
+                            $result = $getData->get_result();
+                            foreach($result as $menu){
+                        echo '<div class="bg-white shadow-md rounded-lg overflow-hidden">
+                        <img src="../img/menus/'.$menu['imgSrc'].'" alt="'.$menu['titre'].'" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold text-gray-800">'.$menu['titre'].'</h3>
+                            <p class="text-gray-600 mt-2">$'.$menu['prix'].'</p>
 
+                            <div class="mt-4 overflow-y-auto max-h-[300px]">
+                                <h4 class="font-semibold text-gray-800">Dishes:</h4>
+                                <div class="mt-2">';
+
+                                $getID = $menu['ID_menu'];
+                                $getPlats = $cnx->prepare("SELECT * FROM plats WHERE ID_menu = ?");
+                                $getPlats->bind_param("i",$getID);
+                                if($getPlats->execute()){
+                                    $resultPlats = $getPlats->get_result();
+                                    foreach($resultPlats as $plat){
+                                        echo '<div class="mt-4">
+                                        <h5 class="text-lg font-semibold text-gray-800">Plat 1: '.$plat['Titre'].'</h5>
+                                        <img src="../img/menus/'.$plat['imgSrc'].'" alt="Plat Image" class="w-32 h-32 object-cover">
+                                        <p class="text-gray-600 mt-2">'.$plat['Description'].'</p>
+                                    </div>
+                                    </div>
+                                        ';
+                                    }
+                                }
+                        
+                            echo ' <button onclick="openModal('.$menu['ID_menu'].')" class="mt-4 w-full py-2 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500">Reserve Now</button>
+                        </div>
+                    </div>';
+                            }
+                        }
+                    }
 
 
 
                 ?>
 
-                    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                        <img src="https://via.placeholder.com/400" alt="Menu Image" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="text-xl font-semibold text-gray-800">Gourmet French Dinner</h3>
-                            <p class="text-gray-600 mt-2">Experience a luxurious five-course French meal.</p>
-
-                            <!-- Plats under the menu -->
-                            <div class="mt-4 overflow-y-auto max-h-[300px]">
-                                <h4 class="font-semibold text-gray-800">Dishes:</h4>
-                                <div class="mt-2">
-                                    <!-- Plat 1 -->
-                                    <div class="mt-4">
-                                        <h5 class="text-lg font-semibold text-gray-800">Plat 1: French Onion Soup</h5>
-                                        <img src="https://via.placeholder.com/150" alt="Plat Image" class="w-32 h-32 object-cover">
-                                        <p class="text-gray-600 mt-2">A classic French soup made with onions, beef stock, and topped with melted cheese.</p>
-                                    </div>
-                                    <!-- Plat 2 -->
-                                    <div class="mt-4">
-                                        <h5 class="text-lg font-semibold text-gray-800">Plat 2: Beef Bourguignon</h5>
-                                        <img src="https://via.placeholder.com/150" alt="Plat Image" class="w-32 h-32 object-cover">
-                                        <p class="text-gray-600 mt-2">A rich and flavorful beef stew cooked in red wine, with mushrooms and pearl onions.</p>
-                                    </div>
-                                    <!-- Plat 3 -->
-                                    <div class="mt-4">
-                                        <h5 class="text-lg font-semibold text-gray-800">Plat 3: Crème Brûlée</h5>
-                                        <img src="https://via.placeholder.com/150" alt="Plat Image" class="w-32 h-32 object-cover">
-                                        <p class="text-gray-600 mt-2">A delicious custard dessert with a crispy caramelized sugar top.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button onclick="openModal()" class="mt-4 w-full py-2 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500">Reserve Now</button>
-                        </div>
-                    </div>
-
-
-
-                    <!-- Menu Card 2 -->
-                    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                        <img src="https://via.placeholder.com/400" alt="Menu Image" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="text-xl font-semibold text-gray-800">Italian Feast</h3>
-                            <p class="text-gray-600 mt-2">Savor the authentic flavors of Italy.</p>
-
-                            <!-- Plats under the menu -->
-                            <div class="mt-4 overflow-y-auto max-h-[300px]">
-                                <h4 class="font-semibold text-gray-800">Dishes:</h4>
-                                <div class="mt-2">
-                                    <!-- Plat 1 -->
-                                    <div class="mt-4">
-                                        <h5 class="text-lg font-semibold text-gray-800">Plat 1: Margherita Pizza</h5>
-                                        <img src="https://via.placeholder.com/150" alt="Plat Image" class="w-32 h-32 object-cover">
-                                        <p class="text-gray-600 mt-2">A classic pizza topped with fresh mozzarella, basil, and tomato sauce.</p>
-                                    </div>
-                                    <!-- Plat 2 -->
-                                    <div class="mt-4">
-                                        <h5 class="text-lg font-semibold text-gray-800">Plat 2: Lasagna</h5>
-                                        <img src="https://via.placeholder.com/150" alt="Plat Image" class="w-32 h-32 object-cover">
-                                        <p class="text-gray-600 mt-2">A hearty Italian pasta dish made with layers of meat sauce, ricotta, and mozzarella.</p>
-                                    </div>
-                                    <!-- Plat 3 -->
-                                    <div class="mt-4">
-                                        <h5 class="text-lg font-semibold text-gray-800">Plat 3: Tiramisu</h5>
-                                        <img src="https://via.placeholder.com/150" alt="Plat Image" class="w-32 h-32 object-cover">
-                                        <p class="text-gray-600 mt-2">A traditional Italian dessert made with coffee-soaked ladyfingers and mascarpone cream.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button onclick="openModal()" class="mt-4 w-full py-2 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500">Reserve Now</button>
-                        </div>
-                    </div>
-
-                    <!-- Menu Card 3 -->
-                    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                        <img src="https://via.placeholder.com/400" alt="Menu Image" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="text-xl font-semibold text-gray-800">Vegan Delight</h3>
-                            <p class="text-gray-600 mt-2">Enjoy a healthy and delicious vegan feast.</p>
-
-                            <!-- Plats under the menu -->
-                            <div class="mt-4 overflow-y-auto max-h-[300px]">
-                                <h4 class="font-semibold text-gray-800">Dishes:</h4>
-                                <div class="mt-2">
-                                    <!-- Plat 1 -->
-                                    <div class="mt-4">
-                                        <h5 class="text-lg font-semibold text-gray-800">Plat 1: Vegan Burger</h5>
-                                        <img src="https://via.placeholder.com/150" alt="Plat Image" class="w-32 h-32 object-cover">
-                                        <p class="text-gray-600 mt-2">A plant-based burger made with lentils, vegetables, and a flavorful vegan patty.</p>
-                                    </div>
-                                    <!-- Plat 2 -->
-                                    <div class="mt-4">
-                                        <h5 class="text-lg font-semibold text-gray-800">Plat 2: Vegan Paella</h5>
-                                        <img src="https://via.placeholder.com/150" alt="Plat Image" class="w-32 h-32 object-cover">
-                                        <p class="text-gray-600 mt-2">A colorful Spanish rice dish made with a variety of fresh vegetables and spices.</p>
-                                    </div>
-                                    <!-- Plat 3 -->
-                                    <div class="mt-4">
-                                        <h5 class="text-lg font-semibold text-gray-800">Plat 3: Chia Pudding</h5>
-                                        <img src="https://via.placeholder.com/150" alt="Plat Image" class="w-32 h-32 object-cover">
-                                        <p class="text-gray-600 mt-2">A delicious dessert made with chia seeds, almond milk, and a touch of vanilla.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button onclick="openModal()" class="mt-4 w-full py-2 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500">Reserve Now</button>
-                        </div>
-                    </div>
-                </div>
             </section>
         </main>
 
@@ -222,7 +148,7 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <button name="confirm" type="submit" class="w-full py-3 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    <button id="confirm" name="confirm" type="submit" class="w-full py-3 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                     >
                         Confirm Reservation
                     </button>
@@ -242,7 +168,8 @@
     <script src="../js/script.js"></script>
     <script>
         
-            function openModal() {
+            function openModal(id) {
+                document.getElementById("confirm").value = id;
                 document.getElementById('reservationModal').style.display = 'flex';
             }
 
