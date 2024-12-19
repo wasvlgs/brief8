@@ -15,6 +15,9 @@
     }
 
 
+    
+
+
 
 ?>
 
@@ -51,6 +54,15 @@
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
+
+
+<div id="success" class="w-full z-10 h-[65px] fixed top-0 left-0 hidden rounded-[5px] border-2 border-[green] text-[#49de49] font-semibold items-center pl-10 bg-[#052c05]" role="alert">
+  Reservation succesfuly!
+</div>
+<div id="error" class="w-full z-10 h-[65px] hidden fixed top-0 left-0 rounded-[5px] border-2 border-[red] text-[#972a2a] font-semibold items-center pl-10 bg-[#2c0505]" role="alert">
+  Error try again!
+</div>
+
 
     <div class="min-h-screen flex flex-col">
 
@@ -140,6 +152,13 @@
                         />
                     </div>
 
+                    <!-- Place Field -->
+                    <div>
+                        <label for="adresse" class="block text-sm font-medium text-gray-700">Select Adresse</label>
+                        <input type="text" id="adresse" name="adresse" class="mt-1 w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                        />
+                    </div>
+
                     <!-- Number of People Field -->
                     <div>
                         <label for="people" class="block text-sm font-medium text-gray-700">Number of People</label>
@@ -156,6 +175,43 @@
                 <button onclick="closeModal()" class="mt-4 w-full py-2 px-4 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Close</button>
             </div>
         </div>
+
+
+        <?php
+
+
+            if(isset($_POST['confirm'])){
+                $getMenuId = strip_tags($_POST['confirm']);
+                $getDate = strip_tags($_POST['date']);
+                $getTime = strip_tags($_POST['time']);
+                $getAdresse = htmlspecialchars($_POST['adresse']);
+                $nomberPeople = strip_tags($_POST['people']);
+
+                if($cnx){
+                    $getUserId = $_SESSION['id'];
+                    $addReservation = $cnx->prepare("INSERT INTO reservation(ID_user,ID_menu,Date_reservation,Time_reservation,Adresse,places_disponibles) VALUES(?,?,?,?,?,?)");
+                    $addReservation->bind_param("iisssi",$getUserId,$getMenuId,$getDate,$getTime,$getAdresse,$nomberPeople);
+                    if($addReservation->execute()){
+                        echo '<script>document.getElementById("success").style.display = "flex";
+                        setTimeout(()=>{
+                            document.getElementById("success").style.display = "none";
+                        },1000)
+                        </script>';
+                    }else{
+                        echo '<script>document.getElementById("error").style.display = "flex";
+                                    setTimeout(()=>{
+                                        document.getElementById("error").style.display = "none";
+                                    },1000)
+                                    </script>';
+                    }
+                }
+
+
+            }
+
+        
+
+        ?>
 
         <!-- Footer -->
         <footer class="bg-gray-800 text-white py-6 mt-auto">

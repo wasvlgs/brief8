@@ -120,6 +120,7 @@ function checkReserveUser(){
 
         let getDate = formElements['date'];
         let getTime = formElements['time'];
+        let getAdresse = formElements['adresse'];
         let getPeople = formElements['people'];
 
 
@@ -130,12 +131,15 @@ function checkReserveUser(){
         if(!dateRegex.test(getDate.value)){
             event.preventDefault();
             getDate.style.border = "2px solid red";
-        }else if(!timeRegex.test(getTime.value)){
+        }else if(getTime.value.trim() == ""){
             event.preventDefault();
             getTime.style.border = "2px solid red";
         }else if(!peopleRegex.test(getPeople.value)){
             event.preventDefault();
             getPeople.style.border = "2px solid red";
+        }else if(!address.test(getAdresse.value)){
+            event.preventDefault();
+            getAdresse.style.border = "2px solid red";
         }
     })
 }
