@@ -92,6 +92,7 @@
                     $phone = htmlspecialchars($_POST['phone']);
                     $email = htmlspecialchars($_POST['email']);
                     $password = htmlspecialchars($_POST['password']);
+                    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
                     // $cPassword = $_POST['confirmpassword'];
                     if($cnx){
                         $checkEmail = $cnx->prepare("SELECT * FROM users");
@@ -105,24 +106,27 @@
                             }
                             if($answer === true){
                                 $sql = $cnx->prepare("INSERT INTO users(nom,prenom,email,password,Adresse,num,type) VALUES(?, ?, ?, ?, ?, ?, 2)");
-                                $sql->bind_param("sssssi", $FName, $LName, $email, $password, $adresse, $phone);
+                                $sql->bind_param("sssssi", $FName, $LName, $email, $hashedPassword, $adresse, $phone);
+
                                 if($sql->execute()){
 
-                                    $getUser = $cnx->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
-                                    $getUser->bind_param("ss",$email,$password);
+                                    $getUser = $cnx->prepare("SELECT * FROM users WHERE email = ?");
+                                    $getUser->bind_param("s",$email);
                                     if($getUser->execute()){
+                                        session_start();
                                         $result = $getUser->get_result();
                                         $user = $result->fetch_assoc();
-                                        session_start();
                                         $_SESSION['id'] = $user['ID_user'];
+                                        echo '<script>document.getElementById("success").style.display = "flex";
+                                        setTimeout(()=>{
+                                        document.getElementById("success").style.display = "none";
+                                        location.replace("../pages/menu.php");
+                                            },1000)
+                                        </script>';
                                     }else{
                                         session_destroy();
                                     }
-                                    echo '<script>document.getElementById("success").style.display = "flex";
-                                    setTimeout(()=>{
-                                        document.getElementById("success").style.display = "none";
-                                    },1000)
-                                    </script>';
+                                    
                                 }else{
                                     echo '<script>document.getElementById("error").style.display = "flex";
                                     setTimeout(()=>{

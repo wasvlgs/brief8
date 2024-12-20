@@ -104,13 +104,14 @@
         $getEmail = htmlspecialchars($_POST['email']);
         $getPassword = htmlspecialchars($_POST['password']);
 
+
         if($cnx){
-            $sql = $cnx->prepare("SELECT * FROM users INNER JOIN role ON users.type = role.ID_role WHERE email = ? AND password = ?");
-            $sql->bind_param("ss",$getEmail,$getPassword);
+            $sql = $cnx->prepare("SELECT * FROM users INNER JOIN role ON users.type = role.ID_role WHERE email = ?");
+            $sql->bind_param("s",$getEmail);
             if($sql->execute()){
                 $result = $sql->get_result();
-                if($result->num_rows === 1){
-                    $user = $result->fetch_assoc();
+                $user = $result->fetch_assoc();
+                if($result->num_rows === 1 && password_verify($getPassword, $user['password'])){
 
                     session_start();
                     if($user['titre'] == "admin"){
@@ -139,7 +140,7 @@
                     }
                     
                 }else{
-                    session_destroy();
+                    
                     echo '<script>document.getElementById("error").style.display = "flex";
                 setTimeout(()=>{
                     document.getElementById("error").style.display = "none";
@@ -147,7 +148,7 @@
                 </script>';
                 }
             }else{
-                session_destroy();
+                
                 echo '<script>document.getElementById("error").style.display = "flex";
                 setTimeout(()=>{
                     document.getElementById("error").style.display = "none";

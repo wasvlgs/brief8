@@ -7,6 +7,23 @@
     if(!isset($_SESSION['id'])){
         session_destroy();
         echo '<script>location.replace("../login/login.php")</script>';
+    }else{
+        if($cnx){
+            $getId = $_SESSION['id'];
+            $getUser = $cnx->prepare("SELECT * FROM users INNER JOIN role ON users.type = role.ID_role WHERE ID_user = ?");
+            $getUser->bind_param("i",$getId);
+            if($getUser->execute()){
+                $result = $getUser->get_result();
+                $user = $result->fetch_assoc();
+                if($user['titre'] != "client"){
+                    session_destroy();
+                    echo '<script>location.replace("../login/login.php")</script>';
+                }
+            }else{
+                session_destroy();
+                echo '<script>location.replace("../login/login.php")</script>';
+            }
+        }
     }
 
     if(isset($_POST['logout'])){
@@ -93,7 +110,7 @@
                             $result = $getData->get_result();
                             foreach($result as $menu){
                         echo '<div class="bg-white shadow-md rounded-lg overflow-hidden">
-                        <img src="../img/menus/'.$menu['imgSrc'].'" alt="'.$menu['titre'].'" class="w-full h-48 object-cover">
+                        <img src="'.$menu['imgSrc'].'" alt="'.$menu['titre'].'" class="w-full h-48 object-cover">
                         <div class="p-4">
                             <h3 class="text-xl font-semibold text-gray-800">'.$menu['titre'].'</h3>
                             <p class="text-gray-600 mt-2">$'.$menu['prix'].'</p>
@@ -107,10 +124,10 @@
                                 $getPlats->bind_param("i",$getID);
                                 if($getPlats->execute()){
                                     $resultPlats = $getPlats->get_result();
-                                    foreach($resultPlats as $plat){
+                                    foreach($resultPlats as $index => $plat){
                                         echo '<div class="mt-4">
-                                        <h5 class="text-lg font-semibold text-gray-800">Plat 1: '.$plat['Titre'].'</h5>
-                                        <img src="../img/menus/'.$plat['imgSrc'].'" alt="Plat Image" class="w-32 h-32 object-cover">
+                                        <h5 class="text-lg font-semibold text-gray-800">Plat '.($index + 1).': '.$plat['Titre'].'</h5>
+                                        <img src="'.$plat['imgSrc'].'" alt="Plat Image" class="w-32 h-32 object-cover">
                                         <p class="text-gray-600 mt-2">'.$plat['Description'].'</p>
                                     </div>
                                     </div>

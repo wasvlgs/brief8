@@ -69,7 +69,7 @@
                 <form method="post">
                     <a href="dashboard.php" class="text-white hover:underline mx-2">Dashboard</a>
                     <a href="addmenu.php" class="text-white hover:underline mx-2">Add menu</a>
-                    <a href="reservation.php" class="text-white hover:underline mx-2">reservation</a>
+                    <a href="reservation.php" class="text-white hover:underline mx-2">Menus</a>
                     <a href="users.php" class="text-white hover:underline mx-2">Users</a>
                     <button type="submit" name="logout" class="text-white hover:underline mx-2">Logout</button>
                 </form>
@@ -152,12 +152,24 @@
                     <p class="text-3xl font-bold text-red-500 mt-4"><?php echo $CountMenusCounter; }
             } 
 
-            $getNextReserve = $cnx->prepare("SELECT * FROM reservation WHERE statut = 'Confirmed' ORDER BY ID_reservation LIMIT 1");
+            $getNextReserve = $cnx->prepare("SELECT * FROM reservation WHERE Date(Date_reservation) > CURRENT_DATE() AND statut = 'Confirmed' ORDER BY Date_reservation LIMIT 1");
             if($getNextReserve->execute()){
                 $resultNextReserve = $getNextReserve->get_result();
                 $theReservation = $resultNextReserve->fetch_assoc();
-                $getDate = $theReservation['Date_reservation'];
-                $getAdresse = $theReservation['Adresse'];
+                $getAdresse;
+                $getDate;
+                if(isset($theReservation['Date_reservation'])){
+                    $getDate = $theReservation['Date_reservation'];
+                }else{
+                    $getDate = "No reservation exist";
+                }
+
+                if(isset($theReservation['Adresse'])){
+                    $getAdresse = $theReservation['Adresse'];
+                }else{
+                    $getAdresse = "Take a rest";
+                }
+                
 
             ?></p>
                 </div>
@@ -199,6 +211,87 @@
                                 <button value="'.$penReserve['ID_reservation'].'" name="approve" class="text-sm py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">Approve</button>
                                 <button value="'.$penReserve['ID_reservation'].'" name="reject" class="text-sm py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 ml-2">Reject</button>
                             </form></td>
+                        </tr>';
+                                    }
+                                }
+                            }
+
+
+                            if(isset($_POST['approve'])){
+                                $getIdReserve = strip_tags($_POST['approve']);
+                                if($cnx){
+                                    $aproveReserves = $cnx->prepare("UPDATE reservation SET statut = 'Confirmed' WHERE ID_reservation = ?");
+                                    $aproveReserves->bind_param("i",$getIdReserve);
+                                    if($aproveReserves->execute()){
+                                        echo '<script>document.getElementById("success").style.display = "flex";
+                                        setTimeout(()=>{
+                                            document.getElementById("success").style.display = "none";
+                                        },1000)
+                                        </script>';
+                                    }
+                                }
+                            }
+
+                            if(isset($_POST['reject'])){
+                                $getIdReserve = strip_tags($_POST['reject']);
+                                if($cnx){
+                                    $rejectReserves = $cnx->prepare("DELETE FROM reservation WHERE ID_reservation = ?");
+                                    $rejectReserves->bind_param("i",$getIdReserve);
+                                    if($rejectReserves->execute()){
+                                        echo '<script>document.getElementById("error").style.display = "flex";
+                                    setTimeout(()=>{
+                                        document.getElementById("error").style.display = "none";
+                                    },1000)
+                                    </script>';
+                                    }
+                                }
+                            }
+
+
+                        ?>
+                        
+                    </tbody>
+                </table>
+            </section>
+
+
+            <section class="bg-white shadow-md rounded-lg p-6 mt-10">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">All Reservations</h2>
+                <table class="min-w-full border-collapse border border-gray-200 overflow-auto">
+                    <thead class="bg-gray-200 text-gray-700">
+                        <tr>
+                            <th class="py-4 px-6 text-left font-medium">Date</th>
+                            <th class="py-4 px-6 text-left font-medium">Time</th>
+                            <th class="py-4 px-6 text-left font-medium">Client</th>
+                            <th class="py-4 px-6 text-left font-medium">Menu</th>
+                            <th class="py-4 px-6 text-center font-medium">Guests</th>
+                            <th class="py-4 px-6 text-center font-medium">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        <?php
+
+
+                            if($cnx){
+                                $getPenReserve = $cnx->prepare("SELECT * FROM reservation INNER JOIN users ON users.ID_user = reservation.ID_user INNER JOIN menus ON menus.ID_menu = reservation.ID_menu");
+                                if($getPenReserve->execute()){
+                                    $resultPenReserve = $getPenReserve->get_result();
+                                    $resultPenReserve->fetch_assoc();
+                                    foreach($resultPenReserve as $penReserve){
+                                        $getColor;
+                                        if($penReserve['statut'] == 'Pending'){
+                                            $getColor = 'orange';
+                                        }else{
+                                            $getColor = 'green';
+                                        }
+                                        echo '<tr class="border-t">
+                            <td class="py-4 px-6">'.$penReserve['Date_reservation'].'</td>
+                            <td class="py-4 px-6">'.$penReserve['Time_reservation'].'</td>
+                            <td class="py-4 px-6">'.$penReserve['prenom'].' '.$penReserve['nom'].'</td>
+                            <td class="py-4 px-6">'.$penReserve['titre'].'</td>
+                            <td class="py-4 px-6 text-center">'.$penReserve['places_disponibles'].'</td>
+                            <td class="py-4 px-6 text-center text-['.$getColor.']">'.$penReserve['statut'].'</td>
+                            
                         </tr>';
                                     }
                                 }

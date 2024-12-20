@@ -74,6 +74,13 @@
     </style>
 </head>
 
+
+<div id="success" class="w-full z-10 h-[65px] fixed top-0 left-0 hidden rounded-[5px] border-2 border-[green] text-[#49de49] font-semibold items-center pl-10 bg-[#052c05]" role="alert">
+  Removed succesfuly!
+</div>
+<div id="error" class="w-full z-10 h-[65px] fixed top-0 left-0 hidden rounded-[5px] border-2 border-[green] text-[#49de49] font-semibold items-center pl-10 bg-[#052c05]" role="alert">
+    Rejected succesfuly!
+</div>
 <body class="bg-gray-50 text-gray-800">
     <!-- Admin Dashboard Container -->
     <div class="min-h-screen flex flex-col">
@@ -84,7 +91,7 @@
                 <form method="post">
                     <a href="dashboard.php" class="text-white hover:underline mx-2">Dashboard</a>
                     <a href="addmenu.php" class="text-white hover:underline mx-2">Add menu</a>
-                    <a href="reservation.php" class="text-white hover:underline mx-2">reservation</a>
+                    <a href="reservation.php" class="text-white hover:underline mx-2">Menus</a>
                     <a href="users.php" class="text-white hover:underline mx-2">Users</a>
                     <button type="submit" name="logout" class="text-white hover:underline mx-2">Logout</button>
                 </form>
@@ -108,22 +115,68 @@
                         </tr>
                     </thead>
                     <tbody class="text-gray-700">
+
+                    <?php
+
+                        if($cnx){
+                            $getUsers = $cnx->prepare("SELECT * FROM users INNER JOIN role ON users.type = role.ID_role WHERE type = 2");
+                            if($getUsers->execute()){
+                                $resultUsers = $getUsers->get_result();
+                                foreach($resultUsers as $items){
+                                    echo '<tr class="border-t">
+                                        <td class="py-4 px-6">'.$items['prenom'].'</td>
+                                        <td class="py-4 px-6">'.$items['nom'].'</td>
+                                        <td class="py-4 px-6">'.$items['email'].'</td>
+                                        <td class="py-4 px-6">'.$items['titre'].'</td>
+                                        <td class="py-4 px-6 text-center">
+                                            
+                                            <form method="post"><button value="'.$items['ID_user'].'" name="remove" class="text-sm py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 ml-2">
+                                                Remove
+                                            </button></form>
+                                        </td>
+                                    </tr>';
+                                }
+
+                            }
+                        }
+
+                        if(isset($_POST['remove'])){
+                            $getID = strip_tags($_POST['remove']);
+                            if($cnx){
+                                $removeUser = $cnx->prepare("DELETE FROM users WHERE ID_user = ?");
+                                $removeUser->bind_param("i",$getID);
+                                if($removeUser->execute()){
+                                    echo '<script>document.getElementById("success").style.display = "flex";
+                                    setTimeout(()=>{
+                                        document.getElementById("success").style.display = "none";
+                                    },1000)
+                                    </script>';
+                                }else{
+                                    echo '<script>document.getElementById("success").style.display = "flex";
+                                    setTimeout(()=>{
+                                        document.getElementById("success").style.display = "none";
+                                    },1000)
+                                    </script>';
+                                }
+                            }
+                        }
+                    
+                    
+                    
+                    ?>
                         <!-- Example User -->
-                        <tr class="border-t">
+                        <!-- <tr class="border-t">
                             <td class="py-4 px-6">John</td>
                             <td class="py-4 px-6">Doe</td>
                             <td class="py-4 px-6">john.doe@example.com</td>
                             <td class="py-4 px-6">User</td>
                             <td class="py-4 px-6 text-center">
-                                <button onclick="showEditForm('John', 'Doe', 'john.doe@example.com')"
-                                    class="text-sm py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    Edit
-                                </button>
+                                
                                 <button class="text-sm py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 ml-2">
                                     Remove
                                 </button>
                             </td>
-                        </tr>
+                        </tr> -->
                     </tbody>
                 </table>
             </div>
@@ -137,56 +190,10 @@
         </footer>
     </div>
 
-    <!-- Pop-up Edit Form -->
-    <div id="edit-popup" class="popup-form flex">
-        <div class="popup-content">
-            <h3 class="text-xl font-bold mb-4">Edit User Details</h3>
-            <form>
-                <div class="mb-4">
-                    <label for="first-name" class="block text-sm font-medium">First Name</label>
-                    <input id="first-name" type="text" class="w-full p-2 border border-gray-300 rounded">
-                </div>
-                <div class="mb-4">
-                    <label for="last-name" class="block text-sm font-medium">Last Name</label>
-                    <input id="last-name" type="text" class="w-full p-2 border border-gray-300 rounded">
-                </div>
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium">Email</label>
-                    <input id="email" type="email" class="w-full p-2 border border-gray-300 rounded">
-                </div>
-                <div class="mb-4">
-                    <label for="password" class="block text-sm font-medium">Password</label>
-                    <input id="password" type="password" class="w-full p-2 border border-gray-300 rounded">
-                </div>
-                <div class="mb-4">
-                    <label for="address" class="block text-sm font-medium">Address</label>
-                    <input id="address" type="text" class="w-full p-2 border border-gray-300 rounded">
-                </div>
-                <div class="mb-4">
-                    <label for="phone" class="block text-sm font-medium">Phone Number</label>
-                    <input id="phone" type="text" class="w-full p-2 border border-gray-300 rounded">
-                </div>
-                <div class="flex justify-end">
-                    <button type="button" onclick="closeEditForm()" class="bg-gray-500 text-white px-4 py-2 rounded-lg">Cancel</button>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg ml-2">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    
 
     <script>
-        // Show the edit form with pre-filled values
-        function showEditForm(firstName, lastName, email) {
-            document.getElementById('first-name').value = firstName;
-            document.getElementById('last-name').value = lastName;
-            document.getElementById('email').value = email;
-            document.getElementById('edit-popup').style.display = 'flex';
-        }
-
-        // Close the edit form
-        function closeEditForm() {
-            document.getElementById('edit-popup').style.display = 'none';
-        }
+        
     </script>
 </body>
 

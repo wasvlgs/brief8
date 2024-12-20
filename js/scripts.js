@@ -30,7 +30,6 @@ const email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 const password = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 const peopleRegex = /^[1-9][0-9]*$/;
 
 const titleRegex = /^[A-Za-z0-9\s]+$/;
