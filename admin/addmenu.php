@@ -32,7 +32,62 @@
     }
 
 
+    
+    
 
+
+// if(isset($_POST['addplat'])){
+//     $getMenuselect = $_POST['menuselect'];
+//     $getDishname = $_POST['dishname'];
+//     $getDesc = $_POST['menudescription'];
+    
+
+
+//     $target_dir = "../img/menus/";
+//     $target_file = $target_dir . basename($_FILES["dishimage"]["name"]);
+//     $uploadOk = 1;
+//     $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+//     $check = getimagesize($_FILES["dishimage"]["tmp_name"]);
+//     if ($check !== false) {
+//         echo "File is an image - " . $check["mime"] . ".";
+//         $uploadOk = 1;
+//     } else {
+//         echo "File is not an image.";
+//         $uploadOk = 0;
+//     }
+
+//     // Check if file already exists
+//     if (file_exists($target_file)) {
+//         echo "Sorry, file already exists.";
+//         $uploadOk = 0;
+//     }
+
+//     // Check file size (e.g., limit to 5MB)
+//     if ($_FILES["dishimage"]["size"] > 5000000) {
+//         echo "Sorry, your file is too large.";
+//         $uploadOk = 0;
+//     }
+
+//     // Allow certain file formats
+//     if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+//         echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+//         $uploadOk = 0;
+//     }
+
+//     // Check if $uploadOk is set to 0 by an error
+//     if ($uploadOk == 0) {
+//         echo "Sorry, your file was not uploaded.";
+//     } else {
+
+//     // If everything is ok, try to upload file
+//     if (move_uploaded_file($_FILES["dishimage"]["tmp_name"], $target_file)) {
+//         echo 'hi';
+//     } else {
+//         echo "Sorry, there was an error uploading your file.";
+//     }
+// }
+// }
 ?>
 
 
@@ -53,6 +108,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
+
+
+
+<div id="success" class="w-full z-10 h-[65px] fixed top-0 left-0 hidden rounded-[5px] border-2 border-[green] text-[#49de49] font-semibold items-center pl-10 bg-[#052c05]" role="alert">
+  Reservation succesfuly!
+</div>
+<div id="error" class="w-full z-10 h-[65px] hidden fixed top-0 left-0 rounded-[5px] border-2 border-[red] text-[#972a2a] font-semibold items-center pl-10 bg-[#2c0505]" role="alert">
+  Error try again!
+</div>
+
+
     <!-- Admin Dashboard Container -->
     <div class="min-h-screen flex flex-col">
         <!-- Navbar -->
@@ -101,12 +167,104 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="w-full py-3 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    <button name="addMenu" type="submit" class="w-full py-3 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                     >
                         Add Menu
                     </button>
                 </form>
             </section>
+
+
+
+
+
+
+
+
+
+
+
+            <?php
+
+                if(isset($_POST['addMenu'])){
+                    $getTitre = htmlspecialchars($_POST['menutitle']);
+                    $getPrix = strip_tags($_POST['menuprix']);
+
+
+
+                    $target_file = basename($_FILES["menuimage"]["name"]);
+                    $uploadOk = 1;
+                    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+                    $check = getimagesize($_FILES["menuimage"]["tmp_name"]);
+                    if ($check !== false) {
+                        echo "File is an image - " . $check["mime"] . ".";
+                        $uploadOk = 1;
+                    } else {
+                        echo "File is not an image.";
+                        $uploadOk = 0;
+                    }
+
+                    // Check if file already exists
+                    if (file_exists($target_file)) {
+                        echo "Sorry, file already exists.";
+                        $uploadOk = 0;
+                    }
+
+                    // Check file size (e.g., limit to 5MB)
+                    if ($_FILES["menuimage"]["size"] > 5000000) {
+                        echo "Sorry, your file is too large.";
+                        $uploadOk = 0;
+                    }
+
+                    // Allow certain file formats
+                    if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+                        echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+                        $uploadOk = 0;
+                    }
+
+                    // Check if $uploadOk is set to 0 by an error
+                    if ($uploadOk == 0) {
+                        echo "Sorry, your file was not uploaded.";
+                    } else {
+
+                    // If everything is ok, try to upload file
+                    if (move_uploaded_file($_FILES["menuimage"]["tmp_name"], $target_file)) {
+                        $addMenu = $cnx->prepare("INSERT INTO menus(titre,prix,imgSrc) VALUES(?,?,?)");
+                        $addMenu->bind_param("sis",$getTitre,$getPrix,$target_file);
+                        if($addMenu->execute()){
+                            echo '<script>document.getElementById("success").style.display = "flex";
+                        setTimeout(()=>{
+                            document.getElementById("success").style.display = "none";
+                        },1000)
+                        </script>';
+                        }else{
+                            echo '<script>document.getElementById("error").style.display = "flex";
+                                    setTimeout(()=>{
+                                        document.getElementById("error").style.display = "none";
+                                    },1000)
+                                    </script>';
+                        }
+                    } else {
+                        echo '<script>document.getElementById("error").style.display = "flex";
+                                    setTimeout(()=>{
+                                        document.getElementById("error").style.display = "none";
+                                    },1000)
+                                    </script>';
+                    }
+                }
+                }
+
+            ?>
+
+
+
+
+
+
+
+
+
 
             <!-- Add Dish to Existing Menu Form -->
             <section>
@@ -117,10 +275,16 @@
                         <label for="menu-select" class="block text-sm font-medium text-gray-700">Select Menu</label>
                         <select id="menu-select" name="menuselect" class="mt-1 w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                         >
-                            <option value="">-- Choose a menu --</option>
-                            <option value="italian">Italian Feast</option>
+                            <option disabled selected>-- Choose a menu --</option>
+                            <?php
+
+                                
+
+
+                            ?>
+                            <!-- <option value="italian">Italian Feast</option>
                             <option value="french">Gourmet French Dinner</option>
-                            <option value="mexican">Mexican Fiesta</option>
+                            <option value="mexican">Mexican Fiesta</option> -->
                         </select>
                     </div>
 
@@ -147,6 +311,7 @@
 
                     <!-- Submit Button -->
                     <button
+                    name="addplat"
                         type="submit"
                         class="w-full py-3 px-4 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
                     >
@@ -164,7 +329,7 @@
         </footer>
     </div>
 
-    <script src="../js/script.js"></script>
+    <script src="../js/scripts.js"></script>
     <script>
             checkMenu();
             checkPlat();

@@ -35,7 +35,6 @@ const peopleRegex = /^[1-9][0-9]*$/;
 
 const titleRegex = /^[A-Za-z0-9\s]+$/;
 const priceRegex = /^[1-9]\d*(\.\d+)?$/;
-const imageTypeRegex = /^image\/(jpeg|png|gif)$/;
 
 
 
@@ -164,7 +163,7 @@ function checkMenu(){
         }else if(!priceRegex.test(getMenuprix.value)){
             event.preventDefault();
             getMenuprix.style.border = "2px solid red";
-        }else if(!imageTypeRegex.test(getMenuimage.value)){
+        }else if(getMenuimage.value == ""){
             event.preventDefault();
             getMenuimage.style.border = "2px solid red";
         }
@@ -196,7 +195,7 @@ function checkPlat(){
         }else if(getMenudescription.value.trim() == ""){
             event.preventDefault();
             getMenudescription.style.border = "2px solid red";
-        }else if(!imageTypeRegex.test(getDishimage.value)){
+        }else if(getDishimage.value == ""){
             event.preventDefault();
             getDishimage.style.border = "2px solid red";
         }
